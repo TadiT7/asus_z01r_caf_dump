@@ -1,0 +1,10 @@
+#!/system/bin/sh
+#echo "$0 $*"> /proc/fac_printklog
+#===============================
+#main 
+#===============================
+
+echo FocalConf_MultipleTest.ini > /proc/driver/fts_test
+
+cat /proc/driver/fts_test
+

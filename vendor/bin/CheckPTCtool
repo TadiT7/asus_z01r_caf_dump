@@ -1,0 +1,71 @@
+#!/vendor/bin/sh
+
+#===============================
+#main 
+#===============================
+
+# Default FCC setting
+fcc_setting_1=500000
+fcc_setting_2=1000000
+
+# Criteria file path
+delta_volt_mv_path="/data/data/ptc_delta_mv.bin"
+
+if [ ! -f "$delta_volt_mv_path" ]; then
+ touch $delta_volt_mv_path
+ echo 100000 > $delta_volt_mv_path
+fi
+
+# Get criteria
+vbat_delta_max=`cat /data/data/ptc_delta_mv.bin`
+#echo vbat_delta_max:$vbat_delta_max
+
+# Set target FCC setting
+echo $fcc_setting_1 > /proc/driver/vbat_fcc_setting_1
+echo $fcc_setting_2 > /proc/driver/vbat_fcc_setting_2
+
+# Disable charge limit before test
+echo 0 > /proc/driver/charger_limit_enable
+sleep 1
+
+# Vbat under 1st FCC setting
+echo 1 > /proc/driver/vbat_fcc_test
+vbat_1=$(cat /proc/driver/vbat_avg_1)
+#echo vbat_1:$vbat_1
+
+# Vbat under 2nd FCC setting
+echo 2 > /proc/driver/vbat_fcc_test
+vbat_2=$(cat /proc/driver/vbat_avg_2)
+#echo vbat_2:$vbat_2
+
+# Get vbat delta
+vbat_delta=$((${vbat_2}-${vbat_1}))
+#echo vbat_delta:$vbat_delta
+
+# Judge
+if [ $((vbat_delta)) -le $((vbat_delta_max)) ]; then
+ echo PASS
+else
+ echo FAIL
+fi
+
+# Enable charge limit after test
+echo 1 > /proc/driver/charger_limit_enable
+
+#if [ "$1" = "500" ] ; then
+# echo 0 > /proc/driver/charger_limit_enable
+# sleep 1
+# echo 1 > /proc/driver/vbat_fcc_test
+# temp=`cat /proc/driver/vbat_avg_1`
+# echo $temp
+# echo 1 > /proc/driver/charger_limit_enable
+#elif [ "$1" = "1000" ]; then
+# echo 0 > /data/data/charger_limit_enable
+# sleep 1
+# echo 2 > /proc/driver/vbat_fcc_test
+# temp=`cat /proc/driver/vbat_avg_2`
+# echo $temp
+# echo 1 > /data/data/charger_limit_enable
+#else
+#    echo -1
+#fi

@@ -1,0 +1,6 @@
+#!/system/bin/sh
+
+checksum=`md5 /dev/block/bootdevice/by-name/system`
+setprop debug.checksum "$checksum"
+
+exit 0

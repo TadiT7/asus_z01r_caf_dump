@@ -1,0 +1,87 @@
+#!/system/bin/sh
+
+ON="/proc/driver/ois_power"
+REG="/proc/driver/ois_i2c_rw"
+RC="/proc/driver/ois_atd_status"
+
+LOG="/proc/fac_printklog"
+
+function usage()
+{
+    echo "
+API: ATD TestCommand Interface
+
+FORMAT: adb shell /data/data/Camera_OIS_Write Para1 Para2
+
+USAGE:
+	Para1: register address(hex format)
+	Para2: data to write(hex format)
+"
+}
+
+function write_value()
+{
+	echo $1 4 $2 > $REG #dword, kernel write at once
+}
+function read_value()
+{
+	echo $1 4 > $REG #dword
+	cat $REG
+}
+function cat_status()
+{
+	cat $RC
+}
+function power_on()
+{
+	echo 1 > $ON
+}
+function power_off()
+{
+	echo 0 > $ON
+}
+
+[ -e $LOG ] && echo "$0 $*"> $LOG
+
+if [ $# -ne 2 ]
+then
+	echo "0"
+	usage
+	exit 1
+fi
+
+reg=$1
+val=$2
+
+echo $reg|grep -Eq "^0x[0-9a-fA-F]+$"
+rc1=$?
+
+echo $val|grep -Eq "^0x[0-9a-fA-F]+$"
+rc2=$?
+
+if [ $rc1 -ne 0 -o $rc2 -ne 0 ]
+then
+	echo "0"
+	echo "please input legal hex format value!"
+	usage
+	exit 1
+fi
+
+power_state=$(cat $ON)
+if [ $power_state -eq 0 ]
+then
+	echo "Solo power up..."
+	solo=1
+	power_on
+else
+	solo=0
+fi
+
+write_value $reg $val
+cat_status
+
+if [ $solo -eq 1 ]
+then
+	echo "Solo power down..."
+	power_off
+fi

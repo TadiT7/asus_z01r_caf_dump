@@ -1,0 +1,69 @@
+#!/system/bin/sh
+#echo "$0 $*"> /proc/fac_printklog
+
+help() {
+    echo "
+	Description: Keypad_Test... 
+	FORMAT: Keypad_Test para1 para2... 
+	Para1 : Key code number (114/115/116)
+	Para2 : Timeout value in decimal 
+	Return : PASS!/FAIL! 
+
+"
+exit 0
+}
+
+setprop factory.fingerprintd 1
+setprop factory.gx_fpd 1
+
+#===============================
+#main 
+#===============================
+case $1 in
+#test volume down
+"114")
+/vendor/bin/Keypad_Test_AP 114 $2
+;;
+#test volume up
+"115")
+/vendor/bin/Keypad_Test_AP 115 $2
+;;
+#test power
+"116")
+cat /sys/module/qpnp_power_on/parameters/pwrkey_mode | grep "1" >/dev/null
+if [ "$?" = 0 ]; then
+/vendor/bin/Keypad_Test_AP 30 $2
+else
+/vendor/bin/Keypad_Test_AP 116 $2
+fi
+;;
+#test home key(fingerprint)
+"102")
+cat /sys/module/qpnp_power_on/parameters/pwrkey_mode | grep "1" >/dev/null
+if [ "$?" = 0 ]; then
+/vendor/bin/Keypad_Test_AP 48 $2
+else
+/vendor/bin/Keypad_Test_AP 102 $2
+fi
+;;
+#test back key and menu key(cap sensor)
+#back key
+"158")
+/vendor/bin/Keypad_Test_AP 158 $2
+;;
+#menu key
+"139")
+cat /sys/module/qpnp_power_on/parameters/pwrkey_mode | grep "1" >/dev/null
+if [ "$?" = 0 ]; then
+/vendor/bin/Keypad_Test_AP 46 $2
+else
+/vendor/bin/Keypad_Test_AP 139 $2
+fi
+;;
+*)
+    help
+;;
+esac
+
+setprop factory.fingerprintd 0
+setprop factory.gx_fpd 0

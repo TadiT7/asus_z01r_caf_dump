@@ -1,0 +1,27 @@
+#!/system/bin/sh
+echo 0x3C00C > /d/spmi/spmi-0/address
+value1=`cat /d/spmi/spmi-0/data`  
+echo 0x3C00B > /d/spmi/spmi-0/address
+value2=`cat /d/spmi/spmi-0/data`
+data1=${value1##* }
+data2=${value2##* }
+
+if [ "${data1}" == "0" ]
+then
+    let data1=0
+else
+   let data1=${data1}/10
+  let data1=${data1}*100
+fi
+
+((temp1=16#${data1}))
+((temp2=16#${data2}))
+let temp=${temp1}+${temp2}
+
+if [ "${temp}" == "0" ]
+then
+    echo 0
+else
+   let temp=200000/${temp}
+   echo ${temp}
+fi

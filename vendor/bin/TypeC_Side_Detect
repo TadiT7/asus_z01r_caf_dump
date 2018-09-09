@@ -1,0 +1,9 @@
+#!/system/bin/sh
+
+variableSide=$(cat /sys/devices/platform/soc/a600000.ssusb/side)
+
+case $variableSide in
+  "ORIENTATION_CC1") echo 1 ;;
+  "ORIENTATION_CC2") echo 2 ;;
+  *) echo 0 ;;
+esac

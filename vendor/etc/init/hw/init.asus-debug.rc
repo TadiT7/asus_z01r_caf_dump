@@ -1,0 +1,45 @@
+#This is init.asus.rc for userdebug/eng.
+import /vendor/etc/init/hw/init.factory.rc
+
+#add btrftestd for factory test
+service btrftestd /system/bin/btrftestd
+    class late_start
+    user root
+    group bluetooth 
+    disabled
+
+#add for WifiTest apk
+service wifitest_agent /vendor/bin/WifiTest_Agent.sh
+    class main
+    user root
+    group root
+    disabled
+    oneshot
+
+on property:wlan.ftm.status=running
+    start wifitest_agent
+
+# for nxp AMP
+service amp_loopback /vendor/bin/AMPloopback -r 48000 -p 1920 -n 2
+    user root
+    group root
+    disabled
+    oneshot
+#    seclable u:r:amp_loopback:s0
+
+on property:audio.amp.loopback=0
+    stop amp_loopback
+
+on property:audio.amp.loopback=1
+    start amp_loopback
+# for nxp AMP
+
+# modem SSR Test
+service ssr_test  /system/vendor/bin/sh /system/vendor/bin/ssr_test.sh
+    class late_start
+    disabled
+    oneshot
+    seclabel u:r:asuslogtool:s0
+
+on property:persist.asus.radio.ssr_test=1
+    start ssr_test

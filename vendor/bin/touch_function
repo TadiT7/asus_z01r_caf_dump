@@ -1,0 +1,55 @@
+#!/system/bin/sh
+#echo "$0 $*"> /proc/fac_printklog
+my_exit() {
+  if [ "$1" == "success" ]
+  then
+	temp=`cat /proc/driver/touch_function`
+	if [ "$temp" == "0" ]
+	then
+    		echo "Disable OK"
+	else
+		echo "Enable OK"
+	fi
+  else
+    echo "Fail"
+  fi
+}
+
+help() {
+    echo "
+API: ATD TestCommand Interface 
+
+FORMAT: adb shell /data/data/touch_function Para1
+
+RETURN VALUE: 0/1   (0 = fail , 1 = pass)
+
+USAGE:
+  <Disable touch funtion.>
+    (para1) 0
+
+  <Enable touch funtion.>
+    (para1) 1
+
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+
+case $1 in
+#Disable touch funtion
+"0")
+    echo 0 > /proc/driver/touch_function
+;;
+#Enable touch funtion
+"1")
+    echo 1 > /proc/driver/touch_function
+;;
+*)
+    help
+;;
+esac
+
+my_exit success

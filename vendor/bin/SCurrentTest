@@ -1,0 +1,89 @@
+#!/system/bin/sh
+#echo "$0 $*"> /proc/fac_printklog
+#Author: Alex1_Wang@asus.com
+#ATD version
+ATD_Interface_Version="v1.0.15"
+
+Version="v1.1"
+#store log file
+LOG_TAG="SCurrentTest"
+LOG_FILE="/data/ScurrentTest"
+
+#debug function
+logi (){
+    echo "[$LOG_TAG] I $@" >> $LOG_FILE
+}
+
+logd (){
+    echo "[$LOG_TAG] D $@" >> $LOG_FILE
+}
+
+loge (){
+    echo "[$LOG_TAG] E $@" >> $LOG_FILE
+}
+
+help(){
+    logd "help()"
+    echo "
+    Tool Version: $Version
+    ATD_Interface_Version: $ATD_Interface_Version
+    FORMAT : adb shell /data/data/SCurrentTest para1
+    RETURE VALUE:OK/FAIL
+    USAGE:
+    <Enter/Leave Air Plan Mode>
+       para1 0:Leave Air Plane Mode/1:Enter Air Plane Mode
+    "
+}
+
+#######################################
+#main
+#######################################
+
+logi "SCurrentTest $Version"
+
+logi "==> $*"
+
+#Get Current airplan mode state
+#sqlite3 /data/data/com.android.providers.settings/databases/settings.db .dump | grep "'airplane_mode_on','1'" > /dev/null
+settings get global airplane_mode_on | grep 1 > /dev/null
+if [ "$?" = 0 ]; then
+	airplanemode="1"
+else
+	airplanemode="0"
+fi
+
+case $1 in
+#Leave Air Plane Mode
+"0")
+   if [ "$airplanemode" != "0"  ]; then
+        echo 0 > /proc/fac_sleep_node
+        settings put global airplane_mode_on 0 > /dev/null
+        am broadcast -a android.intent.action.AIRPLANE_MODE --ez state false > /dev/null
+        echo "OK"
+        exit 0 
+   else
+        echo 0 > /proc/fac_sleep_node
+        echo "OK"
+        exit 0
+   fi                                                           
+;;
+#Enter Air Plane Mode
+"1")
+    if [ "$airplanemode" != "1"  ]; then
+       echo 1 > /proc/fac_sleep_node
+       settings put global airplane_mode_on 1 > /dev/null
+       am broadcast -a android.intent.action.AIRPLANE_MODE --ez state true > /dev/null
+       echo "OK"
+       exit 0
+    else
+       echo 1 > /proc/fac_sleep_node
+       echo "OK"
+       exit 0
+    fi
+;;
+*)
+    help
+;;
+esac
+
+

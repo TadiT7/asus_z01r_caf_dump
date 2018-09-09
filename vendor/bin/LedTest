@@ -1,0 +1,59 @@
+#!/vendor/bin/sh
+#echo "$0 $*"> /proc/fac_printklog
+
+help() {
+    echo "
+API: ATD TestCommand Interface (ver0.2)
+
+FORMAT: adb shell /data/data/LedTest Para1
+
+RETURN VALUE: 0/1   (0 = fail , 1 = pass)
+
+USAGE:
+  <Disable LED.>
+    (Para1) 0
+
+  <Enable LED with red light.>
+    (Para1) 1
+
+  <Enable LED with green light.>
+    (Para1) 2
+
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+case $1 in
+#Disable LED
+"0")
+#	echo 100 > /sys/class/leds/red/pwm_us
+	echo 0 >  /sys/class/leds/red/brightness
+#	echo 100 > /sys/class/leds/green/pwm_us
+	echo 0 >  /sys/class/leds/green/brightness
+	
+;;
+#Enable LED with red light
+"1")
+#	echo 100 > /sys/class/leds/green/pwm_us
+	echo 0 >  /sys/class/leds/green/brightness
+#	echo 100 > /sys/class/leds/red/pwm_us
+	echo 255 >  /sys/class/leds/red/brightness
+;;
+#Enable LED with green light
+"2")
+#	echo 100 > /sys/class/leds/red/pwm_us
+	echo 0 >  /sys/class/leds/red/brightness
+#	echo 100 > /sys/class/leds/green/pwm_us
+	echo 255 >  /sys/class/leds/green/brightness
+;;
+*)
+    help
+;;
+esac
+
+echo "1"
+
+exit 0

@@ -1,0 +1,45 @@
+#!/vendor/bin/sh
+echo "$0 $*"> /proc/fac_printklog
+help() {
+    echo "
+API: ATD TestCommand Interface 
+
+FORMAT: adb shell /data/data/FingerPrintTest Para1
+
+RETURN VALUE: 0/1   (0 = fail , 1 = pass)
+
+USAGE:
+  <FingerPrintTest selftest.>
+    (para1) 0
+
+  <FingerPrintTest has finger.>
+    (para1) 1
+
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+
+case $1 in
+"0")
+	value=`gf_cmd_test 1`
+	if [ $value == 1 ];then
+		echo "PASS"
+	else
+		echo "FAIL"
+	fi
+;;
+"1")
+	value=`gf_cmd_test 3`
+	if [ $value == 1 ];then
+		echo "PASS"
+	else
+		echo "FAIL"
+	fi
+;;
+*)
+    help
+esac	

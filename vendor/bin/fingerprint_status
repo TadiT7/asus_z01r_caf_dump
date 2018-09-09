@@ -1,0 +1,44 @@
+#!/vendor/bin/sh
+echo "$0 $*"> /proc/fac_printklog
+
+#help() {
+#    echo "
+#API: ATD TestCommand Interface
+
+#FORMAT: adb shell /data/data/fingerprint_status
+
+#RETURN VALUE: 0/1   (0 = No ACK , 1 = ACK)
+
+#USAGE: Check Fingerprint Sensor SPI status
+#"
+#exit 0
+#}
+
+#===============================
+#main 
+#===============================
+
+temp=`gf_cmd_test 1`
+echo $temp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

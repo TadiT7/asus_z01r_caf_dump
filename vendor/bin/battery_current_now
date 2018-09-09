@@ -1,0 +1,36 @@
+#!/system/bin/sh
+echo "$0 $*"> /proc/fac_printklog
+my_exit() {
+  if [ "$1" == "success" ]
+  then
+	if [ "$temp" == "0" ]
+	then
+    		echo "Disable OK"
+	else
+		echo "Enable OK"
+	fi
+  else
+    echo "Fail"
+  fi
+}
+
+help() {
+    echo "
+API: ATD TestCommand Interface 
+
+FORMAT: adb shell /data/data/battery_current_now
+
+RETURN VALUE:
+	> 0 => charging current
+	< 0 => discharging current
+
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+
+temp=`cat /sys/class/power_supply/battery/current_now`
+echo $temp

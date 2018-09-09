@@ -1,0 +1,101 @@
+#!/system/bin/sh
+#echo "$0 $*"> /proc/fac_printklog
+#Author: Toby_Du@asus.com
+ATD_Interface_VERSION="V0.93"
+#eMMC solution: XXXXXX XXXXXXX
+
+VERSION="V0.1"
+#	1. first version
+#	2. ATD Interface VERSION: V0.93
+
+#For case 
+PROJECT="AJNB4R"
+
+#store log file
+LOG_FILE="/data/data/eMMCTest.log"
+
+#store return value
+RET_VALUE=""
+
+#Debug message switch
+DEBUG=0
+
+logi () {
+  echo "`date` I $@" >> $LOG_FILE
+  if [ $DEBUG -eq "1" ]
+  then
+    echo "`date +%H:%M:%S:%N` I $@"
+  fi
+}
+
+logd () {
+  echo "`date` D $@" >> $LOG_FILE
+  if [ $DEBUG -eq "1" ]
+  then
+    echo "`date +%H:%M:%S:%N` D $@"
+  fi
+}
+
+loge () {
+  echo "`date` E $@" >> $LOG_FILE
+  if [ $DEBUG -eq "1" ]
+  then
+    echo "`date +%H:%M:%S:%N` E $@"
+  fi
+}
+
+#log success/fail message and show processing result on the consol
+#ATD_ret for ATD's requirement (1 present success), ret for general Linux result (0 present success)
+my_exit() {
+  if [ "$1" == "success" ]
+  then
+    logi "<== return success(1)"
+    ATD_ret="1"
+    ret=0
+  else
+    loge "<### return fail(0)"
+    ATD_ret="0"
+    ret=1
+  fi
+
+  echo $ATD_ret
+  exit $ret
+}
+
+help() {
+    logd "help()"
+
+    echo "
+Test Tool Version: $VERSION
+
+API: ATD TestCommand Interface $ATD_Interface_VERSION
+
+FORMAT: adb shell /data/data/emmc_fw
+
+RETURN VALUE: 0/1   (0 = No ACK , 1 = ACK)
+
+USAGE:
+  
+     
+"
+exit 0
+}
+
+
+#===============================
+#main 
+#===============================
+logi "Project: $PROJECT"
+
+logi "eMMC check $VERSION"
+
+logi "==> $0 $1 $2 $3 $4 $5"
+
+#check_parameter
+
+cat /sys/bus/mmc/devices/mmc0:0001/emmc_prv
+
+exit 0
+
+
+

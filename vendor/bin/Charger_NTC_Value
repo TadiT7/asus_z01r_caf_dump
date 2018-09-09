@@ -1,0 +1,4 @@
+#/vendor/bin/bash
+
+temp=$(cat /proc/driver/charger_ntc)
+echo $((temp/1000))

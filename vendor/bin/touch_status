@@ -1,0 +1,49 @@
+#!/system/bin/sh
+#echo "$0 $*"> /proc/fac_printklog
+my_exit() {
+  if [ "$1" == "success" ]
+  then
+	if [ "$temp" == "0" ]
+	then
+    		echo "Disable OK"
+	else
+		echo "Enable OK"
+	fi
+  else
+    echo "Fail"
+  fi
+}
+
+help() {
+    echo "
+API: ATD TestCommand Interface 
+
+FORMAT: adb shell /data/data/touch_status
+
+RETURN VALUE: 0/1   (0 = NO ACK , 1 = ACK)
+
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+
+#temp=$(cat /proc/lcd_id)
+
+#case $temp in
+#RM67198 Panel
+#"0")
+	 ret=`cat /proc/driver/touch_status`
+	 echo $ret
+#;;
+#RM67191 Panel
+#"1")
+#	 ret=`cat /sys/class/input/input1/touchstatus`
+#	 echo $ret
+#;;
+#*)
+#    echo "NO This Touch!"
+#;;
+#esac

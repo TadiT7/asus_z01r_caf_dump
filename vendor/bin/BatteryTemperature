@@ -1,0 +1,32 @@
+#!/vendor/bin/sh
+
+help() {
+    echo "
+API: ATD TestCommand Interface 
+
+FORMAT: adb shell /data/data/BatteryTemperature
+
+RETURN VALUE: Battery Temperature (mC)
+
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+
+case "$0" in
+"/data/data/BatteryTemperature")
+	Thermal0=$(cat /sys/class/power_supply/battery/temp)
+	if [ $Thermal0 -gt 100 ]
+	then
+  		val0=`expr $Thermal0 \* 100`
+  		echo $val0
+	fi
+;;
+*)
+	help
+;;
+esac
+

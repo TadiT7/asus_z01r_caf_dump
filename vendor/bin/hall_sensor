@@ -1,0 +1,3 @@
+#!/system/bin/sh
+echo "$0 $*"> /proc/fac_printklog
+cat /sys/devices/platform/soc/soc:hall_sensor/hall_sensor/status

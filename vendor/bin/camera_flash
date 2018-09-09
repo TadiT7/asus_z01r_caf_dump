@@ -1,0 +1,38 @@
+#!/system/bin/sh
+
+LOG="/proc/fac_printklog"
+
+RC="/proc/driver/flash_status"
+id=`echo $0|grep -o [0-9]`
+LED="/proc/driver/asus_flash$id"
+
+help() {
+	echo "
+API: ATD TestCommand Interface
+
+FORMAT: adb shell $0 Para1 Para2
+
+RETURN VALUE: 0/1   (0 = fail , 1 = pass)
+
+USAGE:
+  <Choose Torch/Flash mode.>
+    (para1) 0 : Torch mode
+            1 : Flash mode
+
+  <On/Off>
+    (para2) 0 : Off
+            1 : On
+
+"
+exit 0
+}
+
+[ -e $LOG ] && echo "$0 $*"> $LOG
+
+if echo "$1 $2" | grep '^[01] [01]$' > /dev/null; then
+	echo $* > $LED
+	cat $RC
+else
+	echo "0"
+	help
+fi

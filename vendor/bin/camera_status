@@ -1,0 +1,44 @@
+#!/system/bin/sh
+
+DIR="/sys/camera_sensor/status"
+
+NODE_NAMES=(
+rear
+rear2
+)
+
+function get_status()
+{
+	node=${NODE_NAMES[$1]}
+	#echo "node for index $1 is $node"
+	if [ -e $DIR/$node ]
+	then
+		status=$(cat $DIR/$node)
+		if [ ${status:0:3} = "ACK" ]
+		then
+			echo "1"
+		else
+			echo "0"
+		fi
+	else
+		echo "no status data for $node"
+	fi
+}
+
+if [ $# -ne 1 ]
+then
+	echo "Please input rear camera id [0-1]"
+	exit 1
+fi
+
+case $1 in
+"0")
+	get_status 0
+;;
+"1")
+	get_status 1
+;;
+*)
+	echo "invalid rear camera id! valid is [0-1]"
+;;
+esac

@@ -1,0 +1,34 @@
+#!/system/bin/sh
+
+my_exit() {
+  if [ "$1" == "success" ]
+  then
+	if [ "$temp" == "0" ]
+	then
+    		echo "Disable OK"
+	else
+		echo "Enable OK"
+	fi
+  else
+    echo "Fail"
+  fi
+}
+
+help() {
+    echo "
+API: ATD TestCommand Interface 
+
+FORMAT: adb shell /data/data/RF_SKU
+
+RETURN VALUE: 0/1   (0 = NO ACK , 1 = ACK)
+
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+
+temp=`cat /proc/aprf`
+echo $temp

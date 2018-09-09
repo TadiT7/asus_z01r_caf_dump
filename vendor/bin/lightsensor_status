@@ -1,0 +1,3 @@
+#!/system/bin/sh
+echo "$0 $*"> /proc/fac_printklog
+cat /proc/lightsensor_status

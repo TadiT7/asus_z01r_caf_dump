@@ -1,0 +1,37 @@
+#!/vendor/bin/sh
+echo "$0 $*"> /proc/fac_printklog
+my_exit() {
+  if [ "$1" == "success" ]
+  then
+	if [ "$temp" == "0" ]
+	then
+    		echo "Disable OK"
+	else
+		echo "Enable OK"
+	fi
+  else
+    echo "Fail"
+  fi
+}
+
+help() {
+    echo "
+API: ATD TestCommand Interface 
+
+FORMAT: adb shell /data/data/sd_status
+
+RETURN VALUE: 0/1   (0 = NO ACK , 1 = ACK)
+
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+
+if [ -d "/sys/bus/mmc/devices/mmc0:"* ]; then
+	echo "1"
+else
+	echo "0"
+fi

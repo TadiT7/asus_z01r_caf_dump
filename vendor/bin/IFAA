@@ -1,0 +1,40 @@
+#!/vendor/bin/sh
+
+help() {
+    echo "
+API: ATD TestCommand Interface 
+
+FORMAT: adb shell /data/data/IFAA Para1
+
+RETURN VALUE: PASS/FAIL
+
+USAGE:
+  <write ifaa key.>
+    (para1) 1
+
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+
+case $1 in
+#write ifaa key
+"1")
+	stats=$(ifaa_product 1 | grep  'import key success')
+
+	if [ "$stats" == "import key success" ]
+	then
+	    echo 1 > /factory/ifaa.txt
+   		echo "PASS"
+	else
+	    echo 0 > /factory/ifaa.txt
+   		echo "FAIL"
+	fi 
+;;
+*)
+    help
+;;
+esac 

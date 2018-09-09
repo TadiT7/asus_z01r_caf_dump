@@ -1,0 +1,36 @@
+#!/vendor/bin/sh
+#echo "$0 $*"> /proc/fac_printklog
+
+help() {
+    echo "
+API: ATD Check Water Proof Interface 
+
+FORMAT: adb shell /data/data/USB_WaterProof 0
+
+RETURN VALUE: PASS/FAIL
+
+FORMAT: adb shell /data/data/USB_WaterProof 1
+
+RETURN VALUE: PASS/FAIL
+
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+adc_value=`cat /proc/driver/water_detection_adc`
+if [ "$1" = "0" ] ; then
+    if [ $((adc_value)) -gt 1700000 ] ; then
+        echo "PASS"
+    else
+        echo "FAIL"
+    fi
+elif [ "$1" = "1" ]; then
+    if [ $((adc_value)) -lt 200000 ] ; then
+        echo "PASS"
+    else
+        echo "FAIL"
+    fi
+fi 

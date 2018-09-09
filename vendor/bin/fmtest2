@@ -1,0 +1,156 @@
+#!/system/bin/sh
+
+LOG_TAG="fmtest"
+fmrssi=-2
+
+logi ()
+{
+  /system/bin/log -t $LOG_TAG -p i "$@"
+}
+
+logd ()
+{
+  /system/bin/log -t $LOG_TAG -p d "$@"
+}
+
+loge ()
+{
+  /system/bin/log -t $LOG_TAG -p e "$@"
+}
+
+showhelp() {
+  loge "FAIL: wrong input Parameter"
+  echo "The right commad is like this:"
+  echo "   (1) fmtest 0 1/0 freq, enable/disable FM ,freq's range:87500 ~ 108000"
+  echo "   (2) fmtest 1 , get FM RSSI , FM must be enabled"
+  exit 0
+}
+
+Para1=$1
+Para2=$2
+freq=$3
+
+if [ "$Para1" == "" ]; then
+  showhelp
+fi
+
+case $Para1 in
+	"0")
+		if [ "$freq" == "" ];then
+			showhelp
+			exit 0
+		fi
+		if [ $freq -lt 87500 -o $freq -gt 108000 ]; then
+			showhelp
+			exit 0
+		fi				
+		case $Para2 in
+			"0")
+				logi "disable FM..."
+				fmenabled=$(getprop hw.fm.fmenabled)				   
+				if [ "$fmenabled" != "true" ]; then
+					logi "FM alreadly disabled."
+			    	echo "Disable OK"
+					exit 0
+				fi
+				audiodebug=$(getprop hw.fm.audbg)
+				if [ "$audiodebug" == "1" ]; then
+					#setprop persist.asus.audbg $audiodebug
+                                        echo $audiodebug > /proc/driver/audio_debug
+				fi
+				setprop hw.fm.fmstatus 0
+				fstatus=1
+				am broadcast -a stopservice -e u STOPtheFMAudioService > /dev/null
+				x=1
+				while [ $x -le 5 ]
+				do
+				   fstatus=$(getprop hw.fm.fmstatus)				   
+				   if [ "$fstatus" == "1" ]; then
+					  setprop hw.fm.fmenabled false
+					  logi "Disable OK"
+					  echo "Disable OK"
+					  exit 0					  
+				   else
+					  logi "wait 1s for disable $x times."
+					  sleep 1
+					  x=$(($x+1))
+				   fi
+				done
+				logi "Disable Fail"
+			    echo "Disable Fail"
+			    exit 1
+			    ;;
+			"1")
+				logi "enable FM..."
+				
+				fmenabled=$(getprop hw.fm.fmenabled)				   
+				if [ "$fmenabled" == "true" ]; then
+					logi "FM alreadly enabled."
+			    	echo "Enable OK"
+					exit 0
+				fi	
+				#audiodebug=$(getprop persist.asus.audbg)
+				audiodebug=$(cat /proc/driver/audio_debug)
+				if [ "$audiodebug" == "Audio debug mode" ]; then
+					setprop hw.fm.audbg 1
+                                else
+                                        setprop hw.fm.audbg 0
+				fi
+				#setprop persist.asus.audbg 0
+                                echo 0 > /proc/driver/audio_debug
+				  
+				setprop hw.fm.fmstatus 0
+				setprop hw.fm.fmfreq $freq
+				fstatus=0
+				am startservice -n com.asus.fm.test.audio/.FMAudioService > /dev/null
+				x=1
+				while [ $x -le 5 ]
+				do
+				   fstatus=$(getprop hw.fm.fmstatus)				   
+				   if [ "$fstatus" == "1" ]; then
+					  setprop hw.fm.fmenabled true
+					  logi "Enable OK"
+					  echo "Enable OK"
+					  exit 0					  
+				   else
+					  logi "wait 1s for enable $x times."
+					  sleep 1
+					  x=$(($x+1))
+				   fi
+				done
+		        setprop hw.fm.fmenabled false
+				logi "Enable Fail"
+			    echo "Enable Fail"
+			    exit 1
+			    ;;
+			*)
+				showhelp
+				exit 0
+				;;
+		esac
+		;;
+	"1")
+		if [ "$Para2" != "" ];then
+			showhelp
+			exit 0
+		fi
+		fmenabled=$(getprop hw.fm.fmenabled)	
+		if [ "$fmenabled" != "true" ]; then
+			logi "FM not enabled"
+			echo "FM not enabled"
+		    exit 1
+		fi
+		fmrssi=$(getprop hw.fm.fmrssi)
+		if [ "$fmrssi" == "-2" ];then
+			logi "GetRssi Fail."
+			echo "GetRssi Fail."
+			exit 1
+		fi
+		echo "$fmrssi"
+		exit 0
+		;;
+	*)
+		showhelp
+		exit 0
+		;;	
+esac		

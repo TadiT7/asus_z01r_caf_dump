@@ -1,0 +1,126 @@
+#!/system/bin/sh
+
+TAG="SIMTest"
+
+multisim=`getprop persist.radio.multisim.config`
+log -t "$TAG" "multisim = $multisim"
+IS_MSIM="0"
+if [ "$multisim" == "dsds" ] || [ "$multisim" == "dsda" ]; then
+    IS_MSIM="1"
+fi
+
+if [ $# -ne 1 ]; then
+    if [ "$IS_MSIM"  == "1" ]; then
+        echo "Please use SIMTest 0/1/2/3 for Multi SIM"
+        echo "0: get SIM1 IMSI (pass: IMSI, fail: 0)"
+        echo "1: detect SIM1 insert status (SIM1 inserted: 1, not inserted: 0)"
+        echo "2: get SIM2 IMSI (pass: IMSI, fail: 0)"
+        echo "3: detect SIM2 insert status (SIM2 inserted: 1, not inserted: 0"
+    else
+        echo "Please use SIMTest 0/1 for Single SIM"
+        echo "0: get SIM IMSI (pass: IMSI, fail: 0)"
+        echo "1: detect SIM insert status (SIM inserted: 1, not inserted: 0)"
+    fi
+    exit
+fi
+
+SIM_GET="serial_client -c at+cimi"
+SIM_STATE="[0-9]\{5\}"
+SIM_SWITCH="serial_client -c at\$qcsimapp="
+# no-sim-tray projects
+# SIM_DETECT="serial_client -c at+cpin?"
+# SIM1_INSERT="+CME ERROR: SIM "
+# SIM2_INSERT="+CME ERROR: SIM "
+# detect sim tray
+SIM_DETECT="serial_client -c at+cuim"
+SIM1_INSERT="1: inserted"
+SIM2_INSERT="2: inserted"
+
+do_sim_switch() {
+    if [ "$IS_MSIM" == "0" ]; then
+	return;
+    fi
+    cnt=0
+    while [ $cnt -lt 1 ]; do
+	result=`${SIM_SWITCH}${1} | grep -i OK`
+	if [ "$result" != "" ] ; then
+	    break;
+	fi
+	cnt=$(( $cnt + 1 ))
+	log -t "$TAG" "Transfer SIM1 Fail : $cnt"
+	sleep 1
+    done
+    if [ $cnt -eq 1 ] ; then
+	log -t SIMTest "Transfer SIM1 Fail"
+	echo 0
+	exit
+    fi
+}
+
+do_get_sim() {
+    do_sim_switch $1
+
+    cnt=0
+    while [ $cnt -lt 1 ]; do
+        sim_state=`$SIM_GET | grep -i "$SIM_STATE"`
+	if [ "$sim_state" != "" ] ; then
+	    break;
+	fi
+	cnt=$(( $cnt + 1 ))
+	log -t "$TAG" "SIM1 Fail : $cnt"
+	sleep 1
+    done
+    if [ $cnt -eq 1 ] ; then
+        log -t "$TAG" "SIM1 Fail"
+        echo 0
+        exit
+    fi
+    log -t "$TAG" "$sim_state"
+    echo $sim_state
+}
+
+do_detect_sim() {
+    do_sim_switch $1
+
+    cnt=0
+    while [ $cnt -lt 1 ]; do
+	if [ "$1" == "0" ]; then
+	    status1=`$SIM_DETECT | grep -i "$SIM1_INSERT"`
+        elif [ "$1" == "1" ]; then
+	    status1=`$SIM_DETECT | grep -i "$SIM2_INSERT"`
+	fi
+        if [ "$status1" != "" ] ; then
+	    break;
+	fi
+	cnt=$(( $cnt + 1 ))
+	log -t "$TAG" "Detect SIM1 Tray Fail : $cnt"
+	sleep 1
+    done
+    if [ $cnt -eq 1 ] ; then
+	log -t "$TAG" "Detect SIM1 Tray Fail"
+	echo 0
+	exit
+    fi
+    echo 1
+}
+
+case "$1" in
+  "0")
+        do_get_sim 0
+	;;
+  "1")
+        do_detect_sim 0
+        #echo "Not support in ZE500KL"
+	;;
+  "2")
+        do_get_sim 1
+	;;
+  "3")
+        do_detect_sim 1
+        #echo "Not support in ZE500KL"
+	;;
+  *)
+	log -t "$TAG" "No Support $1:$multisim"
+	echo "No Support $1:$multisim"
+	;;
+esac

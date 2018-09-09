@@ -1,0 +1,48 @@
+#!/system/bin/sh
+
+DIR="/sys/camera_sensor/resolution"
+
+NODE_NAMES=(
+rear
+front
+rear2
+front2
+)
+
+function cat_resolution()
+{
+	node=${NODE_NAMES[$1]}
+	#echo "node for index $1 is $node"
+	if [ -e $DIR/$node ]
+	then
+		cat $DIR/$node
+	else
+		echo "no resolution data for $node"
+	fi
+}
+
+
+if [ $# -ne 1 ]
+then
+	echo "Please input camera id [0-3]"
+	exit 1
+fi
+
+
+case $1 in
+"0")
+	cat_resolution 0
+;;
+"1")
+	cat_resolution 1
+;;
+"2")
+	cat_resolution 2
+;;
+"3")
+	cat_resolution 3
+;;
+*)
+	echo "invalid camera id! valid is [0-3]"
+;;
+esac

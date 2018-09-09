@@ -1,0 +1,114 @@
+#!/system/bin/sh
+
+GENERAL_NAME="cameraserver"
+
+APP_ATD="com.asus.cameratest"
+APP_QCOM="org.codeaurora.snapcam"
+APP_GOOGLE="com.android.camera2"
+APP_NAME_ALL="$APP_ATD $APP_QCOM $APP_GOOGLE"
+
+DEFAULT_TIMEOUT_S=30
+
+TIMESTAMP="/proc/uptime"
+DEBUG=0
+
+function dump()
+{
+	ps -A |grep -E "$GENERAL_NAME|$APP_ATD|$APP_QCOM|$APP_GOOGLE"|busybox awk '{printf "%-16s %-8s %-50s\n", $1,$2,$9}'
+}
+
+function usage()
+{
+	echo "Please input timeout value (seconds)!"
+}
+
+function enable_touch()
+{
+	if [ -x "/data/data/touch_function" ]
+	then
+		/data/data/touch_function 1 &> /dev/null
+	fi
+}
+
+
+if [ $# -eq 0 ]
+then
+	timeout_s=$DEFAULT_TIMEOUT_S
+elif [ $# -eq 1 ]
+then
+	timeout_s=$1
+else
+	echo "0"
+	usage
+	exit 1
+fi
+
+echo $timeout_s|grep -Eqi "^[0-9]+$"
+rc=$?
+if [ $rc -ne 0 ]
+then
+	echo "0"
+	echo "please input legal decimal format value!"
+	exit 1
+fi
+
+if [ $DEBUG -eq 1 ]; then
+	dump
+	start_time=$(cat $TIMESTAMP|cut -d ' ' -f 1)
+fi
+
+APP_PID=$(pidof $APP_NAME_ALL)
+
+if [ -n "$APP_PID" ]
+then
+	kill -9 $APP_PID
+	sleep 1
+fi
+
+setprop camera.provider.ready "0"
+stop cameraserver
+stop camera-provider-2-4
+start camera-provider-2-4
+start cameraserver
+
+if [ $DEBUG -eq 1 ]; then
+	start_wait_time=$(cat $TIMESTAMP|cut -d ' ' -f 1)
+fi
+
+DELAY_INTERVAL_US=500000
+MAX_COUNT=$(( timeout_s*1000*1000/DELAY_INTERVAL_US ))
+
+count=0
+
+while [ $count -lt $MAX_COUNT ]
+do
+	is_ready=$(getprop camera.provider.ready 0)
+
+	if [ "$is_ready" = "1" ]
+	then
+		break
+	fi
+
+	(( count++ ))
+	usleep $DELAY_INTERVAL_US
+done
+
+if [ $count -lt $MAX_COUNT ]
+then
+	echo "1"
+else
+	echo "0"
+fi
+
+if [ $DEBUG -eq 1 ]; then
+	end_time=$(cat $TIMESTAMP|cut -d ' ' -f 1)
+	total_time=$(busybox awk 'BEGIN{print "'$end_time'" - "'$start_time'" }')
+	wait_time=$(busybox awk 'BEGIN{print "'$end_time'" - "'$start_wait_time'" }')
+	dump
+	echo "======================================"
+	echo "Total Time ${total_time}s, Wait Time ${wait_time}s"
+	am start $APP_ATD/.MainActivity
+	#am start $APP_QCOM/com.android.camera.CameraActivity
+fi
+
+enable_touch

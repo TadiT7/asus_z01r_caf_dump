@@ -1,0 +1,38 @@
+#!/system/bin/sh
+echo "$0 $*"> /proc/fac_printklog
+
+help() {
+    echo "
+API: ATD TestCommand Interface 
+
+FORMAT: adb shell /data/data/cap_status
+
+RETURN VALUE: 0/1   (0 = NO ACK , 1 = ACK)
+
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+
+temp=$(cat /proc/lcd_id)
+
+case $temp in
+#RM67198 Panel
+"0")
+	 echo BMMI_FT3267_KEY_V01_Board_20170406.ini > /sys/class/input/input1/device/ftsselftest
+
+    	 cat /sys/class/input/input1/device/ftsselftest
+;;
+#RM67191 Panel
+"1")
+	 echo BMMI_FT3267_KEY_V01_Board_20170406.ini > /sys/class/input/input2/device/ftsselftest
+
+    	 cat /sys/class/input/input2/device/ftsselftest
+;;
+*)
+    echo "NO This Capsensor!"
+;;
+esac

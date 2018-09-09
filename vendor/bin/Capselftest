@@ -1,0 +1,10 @@
+#!/system/bin/sh
+echo "$0 $*"> /proc/fac_printklog
+#===============================
+#main 
+#===============================
+
+echo FT3267_KEY_V01_20170313.ini > /sys/class/input/input1/device/ftsselftest
+
+cat /sys/class/input/input1/device/ftsselftest
+

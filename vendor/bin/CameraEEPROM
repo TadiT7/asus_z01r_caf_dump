@@ -1,0 +1,8 @@
+if   [ -f "/proc/driver/rear_eeprom" ];
+then
+cat /proc/driver/rear_eeprom 
+cat /proc/driver/rear_eeprom > /sdcard/rear_eeprom_info.bin
+else
+echo "no rear rear_eeprom data"
+fi
+

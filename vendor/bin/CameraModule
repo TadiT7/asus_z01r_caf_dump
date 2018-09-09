@@ -1,0 +1,44 @@
+DIR="/proc/driver"
+
+NODE_NAMES=(
+RearModule
+FrontModule
+RearModule2
+FrontModule2
+)
+
+function cat_module_name()
+{
+	node=${NODE_NAMES[$1]}
+	#echo "node for index $1 is $node"
+	if [ -e $DIR/$node ]
+	then
+		cat $DIR/$node
+	else
+		echo "$node not detected!"
+	fi
+}
+
+if [ $# -ne 1 ]
+then
+	echo "Please input camera id [0-3]"
+	exit 1
+fi
+
+case $1 in
+"0")
+	cat_module_name 0
+;;
+"1")
+	cat_module_name 1
+;;
+"2")
+	cat_module_name 2
+;;
+"3")
+	cat_module_name 3
+;;
+*)
+	echo "invalid camera id! valid is [0-3]"
+;;
+esac

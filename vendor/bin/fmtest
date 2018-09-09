@@ -1,0 +1,2 @@
+#!/system/bin/sh
+busybox flock -x "/sdcard/fmtest.lock" -c fmtest2 $1 $2 $3

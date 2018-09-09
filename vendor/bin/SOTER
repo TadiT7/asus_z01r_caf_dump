@@ -1,0 +1,72 @@
+#!/system/bin/sh
+
+help() {
+    echo "
+API: ATD TestCommand Interface 
+
+FORMAT: adb shell /data/data/SOTER Para1
+
+RETURN VALUE: PASS/FAIL
+
+USAGE:
+  <Generate soter key.>
+    (para1) 1
+
+  <check soter key.>
+    (para1) 2
+
+  <Generate public key.>
+    (para1) 3
+
+  <Generate devices id.>
+    (para1) 4
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+
+case $1 in
+#Generate soter key
+"1")
+	stats=$(SoterProvisioningTool 1 | grep  'pass')
+    stats_retry=$(SoterProvisioningTool 1 | grep  '10011')
+
+	if [ "$stats" == "pass" ]
+	then
+                echo 0 > /factory/soter.txt
+   		echo "PASS"
+	elif [ "$stats_retry" == "fail -10011" ]
+	    then 
+	                echo 0 > /factory/soter.txt
+   		    echo "PASS"
+   		else
+   		    echo "FAIL"
+   	fi
+;;
+#check soter key
+"2")
+	stats=$(SoterProvisioningTool 2 | grep  'pass')
+
+	if [ "$stats" == "pass" ]
+	then
+                echo 1 > /factory/soter.txt
+   		echo "PASS"
+	else
+   		echo "FAIL"
+	fi 	
+;;
+#Generate public key
+"3")
+	SoterProvisioningTool 3
+;;
+#Generate device id
+"4")
+	SoterProvisioningTool 4
+;;
+*)
+    help
+;;
+esac 

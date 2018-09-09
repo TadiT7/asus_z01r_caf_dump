@@ -1,0 +1,20 @@
+#!/system/bin/sh
+#echo "$0 $*"> /proc/fac_printklog
+#===============================
+#main 
+#===============================
+temp=$(cat /proc/lcd_id)
+
+case $temp in
+#RM67198 Panel
+"0")
+	 echo "TM"
+;;
+#RM67191 Panel
+"1")
+	 echo "EDO"
+;;
+*)
+    echo "NO This Panel!"
+;;
+esac

@@ -1,0 +1,21 @@
+#!/vendor/bin/sh
+#echo "$0 $*"> /proc/fac_printklog
+
+help() {
+    echo "
+API: ATD TestCommand Interface 
+
+FORMAT: adb shell /data/data/Adapter_ADC
+
+RETURN VALUE: 0/1   (0 = NO ACK , 1 = ACK)
+
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+
+temp=`cat /proc/driver/asp1690_Status`
+echo $temp

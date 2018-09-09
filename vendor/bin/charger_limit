@@ -1,0 +1,30 @@
+#!/vendor/bin/sh
+#echo "$0 $*"> /proc/fac_printklog
+help() {
+    echo "
+API: ATD TestCommand Interface 
+
+FORMAT: adb shell /data/data/charger_limit
+
+RETURN VALUE: PASS/FAIL
+
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+if [ "$1" = "" ]; then
+   cat /proc/driver/charging_limit
+else
+   setprop persist.asus.charginglimit $1
+   if [ "$?" == "0" ]
+   then
+       echo "$1" > /proc/driver/charging_limit
+       echo "PASS"
+   else
+       echo "FAIL"
+   fi 
+fi
+

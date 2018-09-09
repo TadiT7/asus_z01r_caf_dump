@@ -1,0 +1,19 @@
+#Author: Sid Liu
+#Mail: Sid_Liu@asus.com
+#Date: 2016/3/14
+LOGPATH=/data/data/7zfolder
+rm -rf $LOGPATH/*
+mkdir $LOGPATH
+cp -r /data/tombstones/ $LOGPATH/tombstones
+cp -r /data/logcat_log/ $LOGPATH/logcat_log
+cp -r /data/anr/ $LOGPATH/anr
+cp -r /asdf/ $LOGPATH/asdf
+cp -r /data/Asuslog/ $LOGPATH/Asuslog
+CURRENTLOG=log`date +%Y%m%d%H%M%S`
+7za a /data/data/7zfolder/$CURRENTLOG.7z -r  /data/data/7zfolder/tombstones/ /data/data/7zfolder/logcat_log/ /data/data/7zfolder/anr/ /data/data/7zfolder/asdf/ /data/data/7zfolder/Asuslog/
+sync
+if [ -f /data/data/7zfolder/$CURRENTLOG.7z ];then
+	echo "7z generate archive SUCCEED."
+else 
+	echo "7z generate archive FAILED."
+fi

@@ -1,0 +1,11 @@
+#<ASUS-guochang_qiu>for factorytest service and property++++
+service asusftm /vendor/bin/sh /vendor/etc/asus/FTM_Main.sh
+    class factorytest
+    oneshot
+
+on property:ro.asus.factory=1
+    class_start factorytest
+#<ASUS-guochang_qiu>for factorytest service and property----
+
+on post-fs-data
+    chmod 777 /data/data

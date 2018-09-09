@@ -1,0 +1,85 @@
+#!/system/bin/sh
+
+#check parameters num
+if [ $# -ne 1 ]
+then 
+	echo "usage: WiFiMaxPower [ 11a | 11b | 11g | 11n | 11ac ]"
+	exit
+fi
+
+#check parameter
+case $1 in
+
+	11[b,g])
+		echo "18"
+		exit
+		;;
+	11[n])
+		echo "17.5"
+		exit
+		;;
+	11a)
+		echo "18"
+		exit
+		;;
+	11ac)
+		echo "15"
+		exit
+		;;
+	*)
+		# invalid parameters, exit
+		echo "$1 is not supported to get WifiMaxPower, current supported:{11,11b,11g,11n,11ac}"
+		exit;;
+
+esac
+
+####################################################
+
+####################################################
+
+#is wifi driver insmod ?
+lsmod | grep wlan > /dev/null 2>&1
+DRIVER_LOADED=$?
+	
+#is current in ftm mode ?
+DRIVER_MODE=`cat /sys/module/wlan/parameters/con_mode 2>/dev/null` 
+
+#enter ftm mode
+if [ "$DRIVER_MODE"x != "5"x ]
+then
+	echo "WiFiMaxPower : open ftm mode" > /dev/kmsg
+	WifiTest 1 1 > /dev/null 2>&1
+fi
+
+#get max tx power
+MAX_TX_POWER=`iwpriv wlan0 get_max_tx_power $1`
+if [ $? -ne 0 ]
+then
+	echo "WiFiMaxPower fail"
+	exit
+fi
+
+#the output looks like "wlan0     get_max_tx_power:16", so, filter the max power value
+MAX_TX_POWER=${MAX_TX_POWER##*:}
+if [ $MAX_TX_POWER -le 10 ]
+then 
+	echo "WiFiMaxPower lower than 10dBm, is may be error value, please check it "
+	exit 
+fi
+
+#output max tx power
+echo $MAX_TX_POWER
+
+#exit ftm mode
+if [ "$DRIVER_MODE"x != "5"x ]
+then
+	echo "WiFiMaxpower : exit ftm mode" > /dev/kmsg
+	WifiTest 1 0 > /dev/null 2>&1
+fi
+
+#re-enable wifi
+if [ "$DRIVER_LOADED"x = "0"x ]
+then 
+	echo "WiFiMaxPower : re-enable wifi" > /dev/kmsg
+	svc wifi enable > /dev/null 2>&1
+fi

@@ -1,0 +1,211 @@
+#!/vendor/bin/sh
+
+help() {
+    echo "
+API: ATD TestCommand Interface 
+
+FORMAT: adb shell /data/data/Thermal para1
+
+para1 -c (Thermal Count) 0-15
+
+RETURN VALUE: Thermal
+
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+
+case "$0" in
+"/data/data/Thermal")
+case "$1" in
+"-c")
+	echo 16
+;;
+"0")#pa1
+	Thermal0=$(cat /sys/class/thermal/thermal_zone67/temp)
+	if [ $Thermal0 -gt 100 ]
+	then
+  		val0=`expr $Thermal0 `
+  		echo $val0
+	else
+  		val0=`expr $Thermal0 \* 1000`
+  	echo $val0
+	fi
+;;
+"1")#pa2
+	Thermal0=$(cat /sys/class/thermal/thermal_zone70/temp)
+	if [ $Thermal0 -gt 100 ]
+	then
+  		val0=`expr $Thermal0`
+  		echo $val0
+	else
+  		val0=`expr $Thermal0 \* 1000`
+  	echo $val0
+	fi
+;;
+"2")#quite
+	Thermal0=$(cat /sys/class/thermal/thermal_zone68/temp)
+	if [ $Thermal0 -gt 100 ]
+	then
+  		val0=`expr $Thermal0`
+  		echo $val0
+	else
+  		val0=`expr $Thermal0 \* 1000`
+  	echo $val0
+	fi
+;;
+"3")#msm
+	Thermal0=$(cat /sys/class/thermal/thermal_zone66/temp)
+	if [ $Thermal0 -gt 100 ]
+	then
+  		val0=`expr $Thermal0`
+  		echo $val0
+	else
+  		val0=`expr $Thermal0 \* 1000`
+  	echo $val0
+	fi
+;;
+"4")#ufs
+	Thermal0=$(cat /sys/class/thermal/thermal_zone69/temp)
+	if [ $Thermal0 -gt 100 ]
+	then
+  		val0=`expr $Thermal0`
+  		echo $val0
+	else
+  		val0=`expr $Thermal0 \* 1000`
+  	echo $val0
+	fi
+;;
+"5")#battery
+	Thermal0=$(cat /sys/class/thermal/thermal_zone71/temp)
+	if [ $Thermal0 -gt 100 ]
+	then
+  		val0=`expr $Thermal0 `
+  		echo $val0
+	else
+  		val0=`expr $Thermal0 \* 1000`
+  	echo $val0
+	fi
+;;
+"6")#cpu0
+	Thermal0=$(cat /sys/class/thermal/thermal_zone1/temp)
+	if [ $Thermal0 -gt 100 ]
+	then
+  		val0=`expr $Thermal0 `
+  		echo $val0
+	else
+  		val0=`expr $Thermal0 \* 1000`
+  	echo $val0
+	fi
+;;
+"7")#cpu1
+	Thermal0=$(cat /sys/class/thermal/thermal_zone2/temp)
+	if [ $Thermal0 -gt 100 ]
+	then
+  		val0=`expr $Thermal0 `
+  		echo $val0
+	else
+  		val0=`expr $Thermal0 \* 1000`
+  	echo $val0
+	fi
+;;
+"8")#cpu2
+	Thermal0=$(cat /sys/class/thermal/thermal_zone3/temp)
+	if [ $Thermal0 -gt 100 ]
+	then
+  		val0=`expr $Thermal0`
+  		echo $val0
+	else
+  		val0=`expr $Thermal0 \* 1000`
+  	echo $val0
+	fi
+;;
+"9")#cpu3
+	Thermal0=$(cat /sys/class/thermal/thermal_zone4/temp)
+	if [ $Thermal0 -gt 100 ]
+	then
+  		val0=`expr $Thermal0`
+  		echo $val0
+	else
+  		val0=`expr $Thermal0 \* 1000`
+  	echo $val0
+	fi
+;;
+"10")#cpu4
+	Thermal0=$(cat /sys/class/thermal/thermal_zone7/temp)
+	if [ $Thermal0 -gt 100 ]
+	then
+  		val0=`expr $Thermal0`
+  		echo $val0
+	else
+  		val0=`expr $Thermal0 \* 1000`
+  	echo $val0
+	fi
+;;
+"11")#cpu5
+	Thermal0=$(cat /sys/class/thermal/thermal_zone8/temp)
+	if [ $Thermal0 -gt 100 ]
+	then
+  		val0=`expr $Thermal0`
+  		echo $val0
+	else
+  		val0=`expr $Thermal0 \* 1000`
+  	echo $val0
+	fi
+;;
+"12")#cpu6
+	Thermal0=$(cat /sys/class/thermal/thermal_zone9/temp)
+	if [ $Thermal0 -gt 100 ]
+	then
+  		val0=`expr $Thermal0`
+  		echo $val0
+	else
+  		val0=`expr $Thermal0 \* 1000`
+  	echo $val0
+	fi
+;;
+"13")#cpu7
+	Thermal0=$(cat /sys/class/thermal/thermal_zone10/temp)
+	if [ $Thermal0 -gt 100 ]
+	then
+  		val0=`expr $Thermal0`
+  		echo $val0
+	else
+  		val0=`expr $Thermal0 \* 1000`
+  	echo $val0
+	fi
+;;
+"14")#gpu0
+	Thermal0=$(cat /sys/class/thermal/thermal_zone11/temp)
+	if [ $Thermal0 -gt 100 ]
+	then
+  		val0=`expr $Thermal0`
+  		echo $val0
+	else
+  		val0=`expr $Thermal0 \* 1000`
+  	echo $val0
+	fi
+;;
+"15")#gpu1
+	Thermal0=$(cat /sys/class/thermal/thermal_zone12/temp)
+	if [ $Thermal0 -gt 100 ]
+	then
+  		val0=`expr $Thermal0`
+  		echo $val0
+	else
+  		val0=`expr $Thermal0 \* 1000`
+  	echo $val0
+	fi
+;;
+*)
+	help
+;;
+esac
+;;
+*)
+	help
+;;
+esac

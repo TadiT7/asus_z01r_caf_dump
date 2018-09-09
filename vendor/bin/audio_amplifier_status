@@ -1,0 +1,67 @@
+#!/system/bin/sh
+#echo "$0 $*"> /proc/fac_printklog
+my_exit() {
+  if [ "$1" == "success" ]
+  then
+	if [ "$temp" == "0" ]
+	then
+    		echo "Disable OK"
+	else
+		echo "Enable OK"
+	fi
+  else
+    echo "Fail"
+  fi
+}
+
+help() {
+    echo "
+API: ATD TestCommand Interface 
+
+FORMAT: adb shell /data/data/audio_amplifier_status
+
+RETURN VALUE: 0/1   (0 = NO ACK , 1 = ACK)
+
+"
+exit 0
+}
+
+
+#===============================
+#main 
+#===============================
+mkdir -p /data/debugfs
+mount -t debugfs debugfs /data/debugfs
+
+if [[ $1 -eq 0 ]]; then
+  {
+  #res=`cat /sys/bus/i2c/drivers/aw87339_pa_spk/2-0058/reg | grep 0x00`
+  res=`cat /data/debugfs/tfa98xx-35/dsp-state`
+  #reg=${res:9:4}
+  if [[ "${res}" = "Failed init" ]]; then
+    echo 0
+  elif [[ "${res}" = "Invalid" ]]; then
+    echo 0
+  else
+    echo 1
+  fi
+  }
+elif [[ $1 -eq 1 ]]; then
+  {
+    #res=`cat /sys/bus/i2c/drivers/aw87339_pa_rcv/2-0059/reg | grep 0x00`
+    #reg=${res:15:4}
+    #echo $reg
+    res=`cat /data/debugfs/tfa98xx-34/dsp-state`
+	#reg=${res:9:4}
+	if [[ "${res}" = "Failed init" ]]; then
+	  echo 0
+	elif [[ "${res}" = "Invalid" ]]; then
+	  echo 0
+	else
+	  echo 1
+	fi
+  }
+  else
+    echo "Invalied command!"
+fi
+umount /data/debugfs

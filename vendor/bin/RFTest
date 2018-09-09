@@ -1,0 +1,59 @@
+#!/system/bin/sh
+#echo "$0 $*"> /proc/fac_printklog
+
+help() {
+    echo "
+API: ATD TestCommand Interface 
+
+FORMAT: adb shell /data/data/RFTest Para1 Para2...
+
+USAGE:
+  <disable flightmode.>
+    (para1) 0 : flightmode
+    (para2) 0 : disable
+  <enable flightmode.>
+    (para1) 0 : flightmode
+    (para2) 1 : enable
+  <makecall to a number>
+    (para1) 1 : makecall
+    (para2) number : ex,10010
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+am broadcast -a asus.modemfactoryservice.BootStartReceiver --ei asus 2 > /dev/null
+case $1 in
+"0")
+	case $2 in
+	#disable flightmode
+	"0")
+	/vendor/bin/SCurrentTest 0 |grep "OK" > /dev/null
+	if [ "$?" = 0 ]; then
+	echo "1"
+	else
+	echo "0"
+	fi
+	;;
+	#enable flightmode
+	"1")
+	/vendor/bin/SCurrentTest 1 |grep "OK" > /dev/null
+	if [ "$?" = 0 ]; then
+	echo "1"
+	else
+	echo "0"
+	fi
+	;;
+	esac
+;;
+"1")
+#makecall to a number
+am broadcast -a asus.modemfactoryservice.BootStartReceiver --ei asus 3 --es asusinfo "Sim:1, Number:$2" >/dev/null
+echo "1"
+;;
+*)
+    help
+;;
+esac

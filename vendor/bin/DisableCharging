@@ -1,0 +1,25 @@
+#!/vendor/bin/sh
+#echo "$0 $*"> /proc/fac_printklog
+help() {
+    echo "
+API: ATD TestCommand Interface 
+
+FORMAT: adb shell /data/data/EnableCharging
+
+RETURN VALUE: PASS/FAIL
+
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+
+echo 0 > /proc/driver/batt_charge_enable
+if [ "$?" == "0" ]
+then
+    echo "PASS"
+else
+    echo "FAIL"
+fi

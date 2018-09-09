@@ -1,0 +1,16 @@
+#logVerboseMask=0x200
+#reprocessDump=TRUE
+#nodeImageDump=2
+singleIFESupportedWidth=4032
+singleIFESupportedHeight=3024
+enableNCSService=FALSE
+disablePDAF=FALSE
+enableDualIFE=FALSE
+enable3ADebugData=TRUE
+enableTuningMetadata=TRUE
+debugDataSizeAF=70000
+debugDataSizeAWB=550000
+debugDataSizeAEC=6000
+tuningDumpDataSizeIPE=100000
+tuningDumpDataSizeIFE=5000
+tuningDumpDataSizeBPS=10000

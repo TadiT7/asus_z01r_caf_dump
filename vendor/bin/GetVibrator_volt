@@ -1,0 +1,3 @@
+#!/system/bin/sh
+echo "$0 $*"> /proc/fac_printklog
+cat /sys/class/timed_output/vibrator/vmax

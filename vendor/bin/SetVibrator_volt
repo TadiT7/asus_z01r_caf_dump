@@ -1,0 +1,25 @@
+#!/system/bin/sh
+#Author: Alex1_Wang@asus.com
+echo "$0 $*"> /proc/fac_printklog
+help(){
+    echo "
+    FORMAT : adb shell /data/data/SetVibrator_volt para1
+    RETURE VALUE:OK/FAIL
+    USAGE:
+       para1 :set vibrator vmax value
+    "
+ exit 0
+}
+
+if [ "$#" != "1" ]; then
+   help
+fi
+case "$1" in 
+[1-9][0-9]*)
+echo  $1 > /sys/class/timed_output/vibrator/vmax
+echo PASS
+;;
+*)
+echo FAIL
+;;
+esac

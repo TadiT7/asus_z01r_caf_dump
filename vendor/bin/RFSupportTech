@@ -1,0 +1,46 @@
+#!/system/bin/sh
+#echo "$0 $*"> /proc/fac_printklog
+#Author : Lotta_Lu@asus.com
+ATD_Interface_VERSION="V2.6"
+
+VERSION="V2.6"
+
+#	1. first version
+#	2. ATD Interface VERSION: V2.6
+
+#store log file
+LOG_TAG="RFSupportTech"
+LOG_FILE="/data/RFSupportTech.log"
+
+logi () {
+  echo "[$LOG_TAG] `date` I $@" >> $LOG_FILE
+}
+
+logd () {
+  echo "[$LOG_TAG] `date` D $@" >> $LOG_FILE
+}
+
+loge () {
+  echo "[$LOG_TAG] `date` E $@" >> $LOG_FILE
+}
+
+
+help() {
+    logd "help()"
+
+    echo "
+Test Tool Version: $VERSION
+
+API: ATD TestCommand Interface $ATD_Interface_VERSION
+
+FORMAT: adb shell /data/data/RFSupportTech
+
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+echo "{GSM-GMSK#GSM-8PSK#WCDMA#TD-SCDMA#CDMA#FDD-LTE#TD-LTE}"
+exit 0

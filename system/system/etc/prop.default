@@ -1,0 +1,13 @@
+#
+# ADDITIONAL_DEFAULT_PROPERTIES
+#
+ro.secure=0
+ro.allow.mock.location=1
+ro.debuggable=1
+#
+# BOOTIMAGE_BUILD_PROPERTIES
+#
+ro.bootimage.build.date=Wed May 16 15:57:48 CST 2018
+ro.bootimage.build.date.utc=1526457468
+ro.bootimage.build.fingerprint=asus/WW_Z01R/Z01R:8.0.0/OPR1.170623.032/WW_20180516:eng/test-keys
+persist.sys.usb.config=adb

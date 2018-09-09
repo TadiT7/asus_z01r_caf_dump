@@ -1,0 +1,109 @@
+#!/system/bin/sh
+#echo "$0 $*"> /proc/fac_printklog
+
+#===============================
+#main 
+#===============================
+#help() {
+
+#echo "
+#FORMAT: adb shell /ReadICCID para1
+
+#USAGE:
+#    (para1) 0 -> sim1, 1 -> sim2
+#"
+#exit 0
+#}
+#if [ $# -eq 1 ]; then
+#	serial_client -c at\$qcsimapp=$1
+	#serial_client -c at+crsm=192,12258,0,0,15,,\"3F00\"
+	#serial_client -c at+crsm=176,12258
+#	serial_client -c AT+CRSM=176,12258,0,0,10
+#else
+#   help
+#fi
+
+
+TAG="ReadICCID"
+
+multisim=`getprop persist.radio.multisim.config`
+log -t "$TAG" "multisim = $multisim"
+IS_MSIM="0"
+if [ "$multisim" == "dsds" ] || [ "$multisim" == "dsda" ]; then
+    IS_MSIM="1"
+fi
+
+if [ $# -ne 1 ]; then
+    if [ "$IS_MSIM"  == "1" ]; then
+        echo "Please use ReadICCID 0/1 for Multi SIM"
+        echo "0: get SIM1 ICCID (pass: ICCID, fail: 0)"
+        echo "1: get SIM2 ICCID (pass: ICCID, fail: 0)"
+    else
+        echo "Please use ReadICCID 0 for Single SIM"
+        echo "0: get SIM ICCID (pass: ICCID, fail: 0)"
+    fi
+    exit
+fi
+
+SIM_SWITCH="serial_client -c at\$qcsimapp="
+SIM_ICCID="serial_client -c AT+CRSM=176,12258,0,0,10"
+
+do_sim_switch() {
+    if [ "$IS_MSIM" == "0" ]; then
+        return;
+    fi
+    cnt=0
+    while [ $cnt -lt 1 ]; do
+        result=`${SIM_SWITCH}${1} | grep -i OK`
+        if [ "$result" != "" ] ; then
+            break;
+        fi
+        cnt=$(( $cnt + 1 ))
+        log -t "$TAG" "Transfer SIM1 Fail : $cnt"
+        sleep 1
+    done
+    if [ $cnt -eq 1 ] ; then
+        log -t TAG "Transfer SIM1 Fail"
+        echo 0
+        exit
+    fi
+}
+
+do_get_iccid() {
+    do_sim_switch $1
+    sim_state=`$SIM_ICCID | grep -i '+CRSM: 144\,0\,\".*\"'`
+    if [ ${#sim_state} -lt 1 ] ; then
+        echo 0
+        exit
+    fi
+    #remove left before first '"'
+    sim_state=${sim_state#*\"}
+    #remove right after last '"'
+    sim_state=${sim_state%\"*}
+    #iccid length should be 20
+    if [ ${#sim_state} -ne 20 ] ; then
+        echo 0
+        exit
+    fi
+    #excahnge digi num(eg: 98681061380473591965 to 89860116834037959156)
+    i=0
+    while [ $i -lt 20 ]; do
+        ICCID=${ICCID}${sim_state:$(( $i + 1 )):1}
+        ICCID=${ICCID}${sim_state:$i:1}
+        i=$(( $i + 2 ))
+    done
+    echo ${ICCID}
+}
+
+case "$1" in
+  "0")
+        do_get_iccid 0
+    ;;
+  "1")
+        do_get_iccid 1
+    ;;
+  *)
+    log -t "$TAG" "No Support $1:$multisim"
+    echo "No Support $1:$multisim"
+    ;;
+esac

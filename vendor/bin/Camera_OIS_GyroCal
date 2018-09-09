@@ -1,0 +1,62 @@
+#!/system/bin/sh
+
+ON="/proc/driver/ois_power"
+CAL="/proc/driver/ois_cali"
+RC="/proc/driver/ois_atd_status"
+
+LOG="/proc/fac_printklog"
+
+function usage()
+{
+    echo "
+API: ATD TestCommand Interface
+
+Format: adb shell /data/data/Camera_OIS_GyroCal
+"
+}
+
+function power_on()
+{
+	echo 1 > $ON
+}
+
+function power_off()
+{
+	echo 0 > $ON
+}
+
+function cat_status()
+{
+	cat $RC
+}
+
+function do_calibration()
+{
+	echo 1 > $CAL
+}
+
+[ -e $LOG ] && echo "$0 $*"> $LOG
+
+power_state=$(cat $ON)
+if [ $power_state -eq 0 ]
+then
+	#echo "Solo power up..."
+	solo=1
+	power_on
+else
+	solo=0
+fi
+
+if [ "$1" = "fake" ]
+then
+	echo "1"
+else
+	do_calibration
+	cat_status
+fi
+
+if [ $solo -eq 1 ]
+then
+	#echo "Solo power down..."
+	power_off
+fi

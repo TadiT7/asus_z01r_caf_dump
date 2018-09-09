@@ -1,0 +1,11 @@
+#!/vendor/bin/sh
+
+#===============================
+#main 
+#===============================
+temp=`cat /sys/devices/virtual/extcon/usb_connector/state`
+if [ "$temp" == "0" ]; then
+    echo "PASS"
+else
+    echo "FAIL"
+fi

@@ -1,0 +1,35 @@
+#!/system/bin/sh
+#echo "$0 $*"> /proc/fac_printklog
+
+help() {
+    echo "
+API: ATD TestCommand Interface 
+
+FORMAT: adb shell /data/data/RFTest Para1...
+
+USAGE:
+  <retrieve the version of modem firmware.>
+    (para1) 0 : query version
+    return : version/0(fail)
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+#am broadcast -a asus.modemfactoryservice.BootStartReceiver --ei asus 2 > /dev/null
+case $1 in
+#get SIM1 IMSI
+"0")
+BASEBAND=`getprop gsm.version.baseband`
+if [ -z "$BASEBAND"  ]; then
+    echo '0'
+else
+    echo $BASEBAND
+fi
+;;
+*)
+    help
+;;
+esac

@@ -1,0 +1,38 @@
+#!/vendor/bin/sh
+#echo "$0 $*"> /proc/fac_printklog
+
+help() {
+    echo "
+API: ATD Check Battery ID Interface 
+
+FORMAT: adb shell /data/data/read_battery_id_status 0
+
+RETURN VALUE: PASS/FAIL
+
+FORMAT: adb shell /data/data/read_battery_id_status 1
+
+RETURN VALUE: battery resistance_id
+
+"
+exit 0
+}
+
+#===============================
+#main 
+#===============================
+if [ "$1" = "0" ] ; then
+ temp=`cat /sys/class/power_supply/bms/battery_type`
+ echo "$temp" | grep -i "51k" > /dev/null
+ if [  $? -ne 0 ]; then
+	echo "FAIL"
+ else
+	echo "PASS"
+ fi
+elif [ "$1" = "1" ]; then
+ temp=`cat /sys/class/power_supply/bms/resistance_id`
+ if [ $((temp)) -ge 45900 ] && [ $((temp)) -le 56100 ]; then
+    echo "cos_51K"
+ else
+    echo $temp
+ fi
+fi 

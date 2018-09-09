@@ -1,0 +1,15 @@
+checkAlgoBase cm36656
+proximity_inf_tolerance 5
+proximity_low_tolerance 5
+proximity_hi_tolerance 5
+proximity_pocket_tolerance 300
+proximity_inf_spec_lower 1
+proximity_inf_spec_upper 250
+proximity_low_spec_lower 5
+proximity_low_spec_upper 50
+proximity_hi_spec_lower 2
+proximity_hi_spec_upper 200
+proximity_diff_spec_lower 10
+proximity_diff_spec_upper 150
+proximity_pocket_spec_lower 250
+proximity_pocket_spec_upper 2500
